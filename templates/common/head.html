@@ -11,7 +11,11 @@ th:with="description=${isPost ? post != null ? post.status.excerpt : singlePage 
   <meta name="site" th:content="${site.url}">
   <meta property="og:type" content="website">
   <meta property="og:title" th:content="${site.title}">
-  <meta property="og:url" th:content="${canonical}">
+
+  <!-- 如果 canonical 是以 / 开头的结尾路径， 与 site.url 拼接成完整路径； http 开头就直接当作完整路径 -->
+  <meta property="og:url" th:if="${#strings.startsWith(canonical,'/')}" th:content="${site.url + #strings.substring(canonical,1)}">
+  <meta property="og:url" th:if="${#strings.startsWith(canonical,'http')}" th:content="${canonical}">
+
   <meta property="og:site_name" th:content="${title}">
   <meta property="og:description" th:content="${description}">
   <meta property="og:locale" content="zh">
@@ -20,7 +24,9 @@ th:with="description=${isPost ? post != null ? post.status.excerpt : singlePage 
   <meta name="twitter:title" th:content="${title}">
   <meta name="twitter:description" th:content="${description}">
   <meta name="twitter:image" th:content="${site.logo}">
-  <link rel="canonical" th:href="${canonical}"/>
+
+  <link rel="canonical" th:if="${#strings.startsWith(canonical,'/')}" th:href="${site.url + #strings.substring(canonical,1)}"/>
+  <link rel="canonical" th:if="${#strings.startsWith(canonical,'http')}" th:href="${canonical}"/>
 
   <link rel="preload stylesheet" as="style" th:href="@{/assets/css/theme.min.css(mew=${theme.spec.version})}">
   <link rel="preload stylesheet" as="style" th:href="@{/assets/lib/remixicon@3.5.0/remixicon.min.css}">
